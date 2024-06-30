@@ -28,7 +28,7 @@ void printOptionsList(){
 
 int main() {
     //Régler le problème d'accent sur Windows
-    std::setlocale(LC_ALL, ".utf8");
+    //std::setlocale(LC_ALL, ".utf8");
 
     const std::string fileName = "tasks.csv";
 

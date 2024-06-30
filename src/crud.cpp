@@ -1,5 +1,6 @@
 #include "crud.h"
 #include <iostream>
+#include <regex>
 
 void createTask(std::vector<Task> &tasks_list)
 {
@@ -9,10 +10,17 @@ void createTask(std::vector<Task> &tasks_list)
     std::cin.ignore();
     std::getline(std::cin, new_task.description);
 
-
-    std::cout<<"Quelle est la date attendue (au format jj/mm/aaaa ) ?\n";
-    //TODO : regex
-    std::cin>>new_task.dueDate;
+    const std::regex date_regex{R"(^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/\-]\d{4}$)"};
+    auto date_valide{false};
+    while(!date_valide) {
+        std::cout<<"Quelle est la date attendue (au format jj/mm/aaaa ) ?\n";
+        //^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/\-]\d{4}$
+        std::cin>>new_task.dueDate;
+        date_valide = std::regex_match(new_task.dueDate, date_regex);
+        if(!date_valide){
+            std::cerr<<"Date invalide ! Réessayez !\n";
+        }
+    }
 
     tasks_list.push_back(new_task);
     std::cout << "Tâche ajoutée avec succès !\n";
@@ -55,15 +63,23 @@ void updateTask(std::vector<Task> &tasks_list)
             tasks_list[task_nb].description = description;
         }
 
-        std::cout<<"Saisir la date attendue (ou laisser vide pour conserver la date actuelle) : ";
-        std::cin.ignore();
-        std::getline(std::cin, due_date);
-        //TODO : regex
-        if(!due_date.empty()){
-            tasks_list[task_nb].dueDate = due_date;
+        auto date_valide{false};
+        const std::regex date_regex{R"(^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/\-]\d{4}$)"};
+            
+        while(!date_valide) {
+            std::cout<<"Saisir la date attendue (ou laisser vide pour conserver la date actuelle) : ";
+            //^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/\-]\d{4}$
+            std::cin>>due_date;
+            if(due_date.empty())
+                break;
+
+            date_valide = std::regex_match(due_date, date_regex);
+            if(!date_valide){
+                std::cerr<<"Date invalide ! Réessayez !\n";
+            } else {
+                tasks_list[task_nb].dueDate = due_date;
+            }
         }
-
-
     } else {
         std::cerr << "Le numéro de tâche indiqué est invalide...\n";
     }
